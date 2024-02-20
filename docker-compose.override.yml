@@ -1,0 +1,9 @@
+services:
+  postgresql:
+    extends:
+      file: docker-compose.yml
+      service: db
+    environment:
+      POSTGRES_HOST: ${HOST}
+    ports:
+      - ${HOST}:5432:5432
