@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: k8s-django
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: web-app
+  template:
+    metadata:
+      labels:
+        project: web-app
+    spec:
+      containers:
+      - name: django
+        image: django_app:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - secretRef:
+              name: django-secrets
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+spec:
+  selector:
+    project: web-app
+  ports:
+  - name: name-of-service-port
+    protocol: TCP
+    port: 8888
+    targetPort: 80
+  type: LoadBalancer
