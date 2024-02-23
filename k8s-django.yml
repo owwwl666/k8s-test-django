@@ -3,26 +3,29 @@ kind: Deployment
 metadata:
   name: django-deployment
   labels:
-    app: k8s-django
+    app.kubernetes.io/name: django_app
+    app.kubernetes.io/component: web
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      project: web-app
+      app.kubernetes.io/name: django_app
+      app.kubernetes.io/component: web
   template:
     metadata:
       labels:
-        project: web-app
+        app.kubernetes.io/name: django_app
+        app.kubernetes.io/component: web
     spec:
       containers:
-      - name: django
-        image: django_app:latest
-        imagePullPolicy: IfNotPresent
-        envFrom:
-          - secretRef:
-              name: django-secrets
-        ports:
-        - containerPort: 80
+        - name: django
+          image: django_app:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: django-secrets
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -30,10 +33,28 @@ metadata:
   name: django-service
 spec:
   selector:
-    project: web-app
+    app.kubernetes.io/name: django_app
+    app.kubernetes.io/component: web
   ports:
-  - name: name-of-service-port
-    protocol: TCP
-    port: 8888
-    targetPort: 80
-  type: LoadBalancer
+    - name: http
+      protocol: TCP
+      port: 8888
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: django-ingress
+spec:
+  rules:
+    - host: star-burger.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: django-service
+                port:
+                  name: http
