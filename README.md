@@ -170,16 +170,19 @@ $ docker compose build web
 
 - Перейдите в директорию `k8s`, находящуюся в корне проекта
 
-- Запустите приложение следующей командой:
+- Запустите приложение следующими командами:
 
   ```shell
-  kubectl apply -f django-app.yml
+  kubectl apply -f deployment.yaml
+  kubectl apply -f service.yaml
+  kubectl apply -f ingres.ymal
   ```
 
 - Запустите Cronjobs для удаления просроченных сессий и наката миграций:
 
   ```shell
-  kubectl apply -f cronjobs.yml
+  kubectl apply -f cronjob-clearsessions.yaml
+  kubectl apply -f cronjob-migrate.yaml
   ```
 
 ### Результат
