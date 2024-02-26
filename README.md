@@ -95,9 +95,9 @@ $ docker compose build web
 
 Перейдите в директорию проекта и выполните следующую команду для сборки образа:
 
-```shell
-minikube image build ./backend_main_django/
-```
+  ```shell
+  minikube image build ./backend_main_django/
+  ```
 
 ### Установите helm и запустите в нем PostgreSQL
 
