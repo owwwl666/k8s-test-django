@@ -2,5 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-k8s/secrets.yml
-k8s/db-values.yaml
+minikube/secrets.yml
+minikube/db-values.yaml
+deploy/yc-sirius/django_secrets.yaml
+deploy/yc-sirius/db_secrets.yaml
