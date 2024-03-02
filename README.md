@@ -188,3 +188,87 @@ $ docker compose build web
 ### Результат
 
 Перейдите по ссылке `<domain_name>`, указанном в файле `hosts`.
+
+
+## Сайт в кластере Yandex Cloud
+
+### Подключение к удаленной базе данных PostgreSQL
+
+- Скачайте и установите локально SSL-сертификат для подключение к БД, введя команду:
+
+```shell
+mkdir -p <PATH>/.postgresql && \
+wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" \
+     --output-document <PATH>/.postgresql/root.crt && \
+chmod 0600 <PATH>/.postgresql/root.crt
+```
+- Создайте манифест файл `secret.yml` и запустите его:
+
+```yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-ssl-certificate
+  namespace: edu-loving-euclid
+data:
+  root.crt: |
+    <Вcтавьте SSL-токен из root.crt>
+```
+
+- Создайте манифест файл Pod с docker образом Ubuntu и пробросьте в контейнер SSL-сертификат:
+
+```yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-psql
+  namespace: edu-loving-euclid
+spec:
+  containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: ssl-volume
+          mountPath: "<PATH_IN_CONTAINER>/.postgresql"
+  volumes:
+    - name: ssl-volume
+      secret:
+        secretName: psql-ssl-certificate
+        defaultMode: 384
+```
+
+- Зайдите в созданный раннее Pod, предварительно установив `postgresql-client`:
+
+```shell
+kubectl exec <pod_name> -it -n <namespace> -- bash -c "apt update && apt install postgresql-client -y"
+```
+
+- Покдлючитесь к PostgreSQL:
+
+```
+psql "host=<host> port=<port> dbname=<dbname> user=<username>"
+```
+
+### Загрузите образ с Django приложением в Docker Hub
+
+- Соберите образ с приложением локально:
+```
+docker build -t <name_image> ./k8s-test-django/backend_main_django/
+```
+- Заведите аккаунт на [Docker Hub](https://hub.docker.com/) и создайте репозиторий для загрузки образа
+- Задайте версию образу, например, хэшем коммита из текущего репозитория:
+
+```
+docker tag <name_iamge_local> <image_in_dockerhub>:<hash_commit>
+```
+
+- Загрузите образ в удаленный репозиторий на Docker Hub:
+
+  ```
+  docker login
+  ```
+
+  ```
+  docker push <image_in_dockerhub>:<hash_commit>
+  ```
