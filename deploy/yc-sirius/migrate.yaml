@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: django-migrate
+  namespace: edu-loving-euclid
+spec:
+  schedule: "* * * * *"
+  startingDeadlineSeconds: 20
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 70
+      template:
+        spec:
+          containers:
+          - name: django-migrate
+            image: zakharterekhov/django-app:f2c64fc
+            imagePullPolicy: IfNotPresent
+            command:
+              - python
+              - manage.py
+              - migrate
+              - --noinput
+            envFrom:
+              - secretRef:
+                  name: django-secrets
+            ports:
+              - containerPort: 80
+          restartPolicy: OnFailure

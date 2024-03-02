@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+  namespace: edu-loving-euclid
+spec:
+  selector:
+    app.kubernetes.io/name: django-app
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 80
+      nodePort: 30391
+  
