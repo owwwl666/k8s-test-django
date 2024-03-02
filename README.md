@@ -249,3 +249,26 @@ kubectl exec <pod_name> -it -n <namespace> -- bash -c "apt update && apt install
 ```
 psql "host=<host> port=<port> dbname=<dbname> user=<username>"
 ```
+
+### Загрузите образ с Django приложением в Docker Hub
+
+- Соберите образ с приложением локально:
+```
+docker build -t <name_image> ./k8s-test-django/backend_main_django/
+```
+- Заведите аккаунт на [Docker Hub](https://hub.docker.com/) и создайте репозиторий для загрузки образа
+- Задайте версию образу, например, хэшем коммита из текущего репозитория:
+
+```
+docker tag <name_iamge_local> <image_in_dockerhub>:<hash_commit>
+```
+
+- Загрузите образ в удаленный репозиторий на Docker Hub:
+
+  ```
+  docker login
+  ```
+
+  ```
+  docker push <image_in_dockerhub>:<hash_commit>
+  ```
