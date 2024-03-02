@@ -192,6 +192,10 @@ $ docker compose build web
 
 ## Сайт в кластере Yandex Cloud
 
+### Ссылка с инструкциями по подключению к выделенным облачным ресурсам
+
+(https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html)[https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html]
+
 ### Подключение к удаленной базе данных PostgreSQL
 
 - Скачайте и установите локально SSL-сертификат для подключение к БД, введя команду:
@@ -272,3 +276,51 @@ docker tag <name_iamge_local> <image_in_dockerhub>:<hash_commit>
   ```
   docker push <image_in_dockerhub>:<hash_commit>
   ```
+
+### Разверните сайт в кластере с помощью графической оболочки Lens Desktop
+
+- Создайте манифест файл с секретами django и запустите его в Lens Desktop:
+
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: django-secrets
+  type: Opaque
+  stringData:
+    SECRET_KEY: "<django secret_key>"
+    DATABASE_URL: "postgres://<db_username>:<db_password>@<cluster_ip>/<db_name>"
+  ```
+
+- Создайте манифест файл с SSL-сертификатом для подключения к PostgreSQL и запустите его в Lens Desktop:
+
+```yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-ssl-certificate
+  namespace: edu-loving-euclid
+data:
+  root.crt: |
+    <Вcтавьте SSL-токен из root.crt>
+```
+
+- Скопируйте содержимое из файла `deploy/yc-sirius/deployment.yaml` в Lens Desktop и запустите.
+
+- Скопируйте содержимое из файла `deploy/yc-sirius/service.yaml` в Lens Desktop и запустите.
+
+- Скопируйте содержимое из файла `deploy/yc-sirius/ingress.yaml` в Lens Desktop и запустите.
+
+- Скопируйте содержимое из файла `deploy/yc-sirius/migrate.yaml` в Lens Desktop и запустите.
+
+- Скопируйте содержимое из файла `deploy/yc-sirius/clearsessions.yaml` в Lens Desktop и запустите.
+
+- Перейдите внутрь одного из Pod с приложением и создайте суперпользователя:
+
+  ```
+  ./manage.py createsuperuser
+  ```
+
+### Перейдите по ссылке ниже для просморта результата и авторизуйтесь под суперпользователем
+
+[https://edu-loving-euclid.sirius-k8s.dvmn.org/admin/](https://edu-loving-euclid.sirius-k8s.dvmn.org/admin/)
