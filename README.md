@@ -194,7 +194,7 @@ $ docker compose build web
 
 ### Ссылка с инструкциями по подключению к выделенным облачным ресурсам
 
-(https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html)[https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html]
+[https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html](https://sirius-env-registry.website.yandexcloud.net/edu-loving-euclid.html)
 
 ### Подключение к удаленной базе данных PostgreSQL
 
